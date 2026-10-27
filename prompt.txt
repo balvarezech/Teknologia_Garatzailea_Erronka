@@ -1,0 +1,358 @@
+================================================================================
+PROMPT INGENERITZAREN BITÁKORA OFIZIALA (PROMPT ENGINEERING LOG)
+Erronka: Minijokoen Multzoa Java + Adimen Artifizialarekin
+Irakasgaia: Teknologia Berritzaileak | 3 Ikasle - Talde Bakarra
+Entregagai Fitxategia: prompt.txt
+================================================================================
+
+Dokumentu honek 3 ariketa nahitaezkoak eta abiarazle orokorra garatzeko erabilitako
+prompt teknikoak, kodearen ebaluazioak, iterazioak eta konponbideak biltzen ditu.
+Dokumentazio orokorra, ebaluazioak eta ikuskapenak EUSKARAZ idatzita daude, eta AIari
+zuzenean bidalitako prompt teknikoak INGELESEZ (garapen profesionalean eraginkortasun
+eta zehaztasun handiagoa lortzeko gomendatutako praktika).
+
+BLOKEEN AURKIBIDEA:
+- 0. BLOKEA: Arkitektura Orokorra, Diseinu Eredua eta Suite Nagusia (GameLauncher)
+- 1. BLOKEA: 1. Ariketa (Oinarrizkoa) - Hiru Lerroan (Tic-Tac-Toe) Minimax eta Aholkuekin
+- 2. BLOKEA: 2. Ariketa (Tartekoa) - Konektatu 4 (Connect 4) Bot Heuristikoarekin
+- 3. BLOKEA: 3. Ariketa (Aurreratua) - Snake 2D Hariekin (Game Loop) eta Auto-Play (A*)
+- 4. BLOKEA: Sendotasun Transbertsala, Salbuespenen Kudeaketa (Crash-Free) eta Integrazioa
+- 5. BLOKEA: Aurkezpenaren Prestaketa eta Zuzeneko Demoren Gidoia (10 Minutu)
+
+================================================================================
+0. BLOKEA: ARKITEKTURA OROKORRA ETA SUITE NAGUSIA
+================================================================================
+
+--- [PROMPT 0.1: OINARRIZKO ARKITEKTURA ETA ABIARAZLE NAGUSIA] ---
+Data: 2026-10-27 | Arduraduna: 1. Ikaslea (Integrazio Burua)
+
+AIari bidalitako Prompt-a (English):
+"""
+Act as a senior software architect specializing in Java desktop applications and Swing GUI.
+We need to design the foundational architecture for a suite of 3 mini-games adhering to these strict requirements:
+1. Environment: Pure Java (JDK 21+) without external dependencies, build tools or third-party frameworks.
+2. Design Pattern: Strict MVC (Model-View-Controller) architecture for each game to decouple business logic from the UI.
+3. Package Structure under com.erronka:
+   - com.erronka.common: Shared UI themes, color palettes, and utility constants.
+   - com.erronka.basic: Exercise 1 (Tic-Tac-Toe with AI).
+   - com.erronka.intermediate: Exercise 2 (Connect 4 with AI).
+   - com.erronka.advanced: Exercise 3 (Snake 2D multithreaded with AI).
+4. Main Class (com.erronka.Main): Must launch an elegant, modern Swing window (JFrame) acting as a Game Launcher Hub.
+   It should display a clean dark-themed dashboard with title, subtitle, and 3 distinct interactive cards/buttons
+   allowing users to launch any of the mini-games independently without blocking or freezing the main launcher window.
+Provide the recommended directory tree and the production-ready code for Main.java and UITheme.java.
+"""
+
+AIaren erantzunaren ebaluazioa (Euskara):
+- AIak paketeen egitura garbia eta abiarazle funtzionala proposatu zuen JFrame bidez.
+- Akats hautemana: Azpileiho bat (joko bat) ireki eta 'X' sakatzean (setDefaultCloseOperation),
+  JVM osoa ixten zen (System.exit), abiarazle nagusia ere ezabatuz.
+- Beharrezko hobekuntza: Joko bakoitzaren JFrame-ak DISPOSE_ON_CLOSE erabili behar du,
+  jokoa ixtean abiarazle nagusiak irekita eta aktibo jarrai dezan.
+
+--- [PROMPT 0.2: LEIHOEN BIZI-ZIKLOA ETA ITERAZIO GRAFIKOA] ---
+Data: 2026-10-27 | Arduraduna: 1. Ikaslea (Integrazio Burua)
+
+AIari bidalitako Prompt-a (English):
+"""
+Refactor Main.java to properly manage window lifecycle and apply modern Swing ergonomics:
+1. Sub-game windows must strictly use JFrame.DISPOSE_ON_CLOSE instead of EXIT_ON_CLOSE, ensuring that closing
+   a mini-game returns focus to the main launcher without terminating the JVM.
+2. Guarantee that all GUI construction and updates run strictly on the Swing Event Dispatch Thread (EDT) using
+   SwingUtilities.invokeLater.
+3. Implement a polished dark palette (Dark Slate background #1E293B, Card background #334155, Neon Cyan accent #06B6D4)
+   with hover effects on launch buttons, rounded borders, and consistent Segoe UI / San-Serif typography.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- Kodea balioztatuta eta `com.erronka.Main` eta `com.erronka.common.UITheme` klaseetan integratuta.
+- Jokoak askatasun osoz ireki eta ixten dira memoria-ihesik eta akatsik gabe.
+
+
+================================================================================
+1. BLOKEA: 1. ARIKETA (OINARRIZKOA) - HIRU LERROAN (TIC-TAC-TOE)
+================================================================================
+
+--- [PROMPT 1.1: JOKOAREN EREDUA ETA MINIMAX ALGORITMOA] ---
+Data: 2026-10-27 | Arduraduna: 1. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Act as a software engineer specializing in Game Theory and AI algorithms in Java.
+Design the core model for a Tic-Tac-Toe game in package com.erronka.basic:
+1. Class TicTacToeModel:
+   - Board state: char[3][3] with values ' ' (empty), 'X' (human player), 'O' (AI bot).
+   - Methods: makeMove(int row, int col, char player), checkWinner(), isBoardFull(), resetBoard().
+   - State management: GameState enum (IN_PROGRESS, X_WON, O_WON, DRAW).
+2. Class TicTacToeAI:
+   - Implement the recursive Minimax algorithm to calculate the optimal move for bot 'O'.
+   - Terminal state evaluation: +10 for 'O' win, -10 for 'X' win, 0 for draw.
+3. Requirements: Keep the model 100% pure Java without any Swing or java.awt dependencies.
+"""
+
+AIaren erantzunaren ebaluazioa (Euskara):
+- Minimax algoritmoak ondo funtzionatzen du eta ez du inoiz galtzen.
+- Akats hautemana: Botak ez ditu garaipen azkarrak lehenesten berantiarren aurrean (+10 berdin bietan).
+  Gainera, beti modu perfektuan jokatzen duenez, erabiltzaile hasiberrientzat etsigarria da eta
+  ez zegoen zailtasun-hautagailurik ezta aholku-sistemarik ere.
+- Beharrezko hobekuntza: Sakoneraren araberako zigorra gehitu (depth penalty), 3 zailtasun-maila
+  ezarri (Erraza, Ertaina, Garaiezina) eta jokalariari laguntzeko pista-metodo bat sortu.
+
+--- [PROMPT 1.2: MINIMAX SAKONERA, ZAILTASUNA ETA AHOLKU ADIMENDUNAK] ---
+Data: 2026-10-27 | Arduraduna: 1. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Enhance TicTacToeAI.java with advanced game logic, difficulty scaling, and a smart advisory system:
+1. Depth-penalized Minimax:
+   - When AI wins: return +10 - depth (incentivizes rapid victories).
+   - When Human wins: return -10 + depth (incentivizes stalling defeat).
+2. Difficulty Levels via enum DifficultyLevel { EASY, MEDIUM, UNBEATABLE }:
+   - EASY: Picks random available cells.
+   - MEDIUM: 50% chance of making an optimal Minimax move, 50% random move.
+   - UNBEATABLE: Strict Minimax calculation (impossible to defeat).
+3. Hint Generator:
+   - Implement getSmartHint(char player): Runs Minimax from the perspective of the specified player
+     and returns the optimal Point(row, col) recommendation, enabling a 'Get Hint' feature for the user.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- AIak orain zailtasun desberdinak ditu eta jokalariak laguntza eskatu dezake botoi baten bidez.
+- Ariketa oinarrizkoaren baldintza adimentsua bikain betetzen da.
+
+--- [PROMPT 1.3: SWING BISTA ETA KONTROLATZAILE INTEGRATUA] ---
+Data: 2026-10-27 | Arduraduna: 1. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Create the View and Controller for Tic-Tac-Toe using Java Swing:
+1. TicTacToeView (JFrame):
+   - 3x3 grid of stylized JButtons (minimum 90x90 px) displaying bold, colored symbols ('X' in Coral, 'O' in Cyan).
+   - Top panel: JComboBox to select DifficultyLevel and an interactive 'Smart Hint (AI)' button.
+   - Bottom panel: Status JLabel showing whose turn it is, and a 'New Game' button.
+   - When 'Smart Hint' is pressed, the recommended cell should briefly flash or highlight in Gold/Amber for 1.5 seconds.
+2. TicTacToeController:
+   - Handles button click events.
+   - Dispatches AI moves with a realistic simulated thinking delay of 350ms using a Swing javax.swing.Timer.
+   - Wraps all game actions in try-catch blocks to prevent any runtime crashes.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- 1. Ariketa osorik amaituta eta probatuta. GUI erakargarria eta akatsik gabekoa.
+
+
+================================================================================
+2. BLOKEA: 2. ARIKETA (TARTEKOA) - KONEKTATU 4 (CONNECT 4)
+================================================================================
+
+--- [PROMPT 2.1: TAULAREN EREDUA ETA GRABITATEAREN LOGIKA] ---
+Data: 2026-10-27 | Arduraduna: 2. Ikaslea (Taula-Logikaren Arduraduna)
+
+AIari bidalitako Prompt-a (English):
+"""
+Act as a game engine programmer in Java.
+Design the core board state and logic for Connect 4 in package com.erronka.intermediate:
+1. Matrix: int[6][7] (6 rows x 7 columns, where 0=empty, 1=Human Player, 2=AI Bot).
+2. Gravity mechanics: When a disc is dropped into a given column (0 to 6), it must settle
+   in the lowest unoccupied row of that column.
+3. Method isColumnFull(int col): Returns true if row 0 of that column is occupied.
+4. Win detection checkWin(int player): Efficiently verify if 4 consecutive discs of the specified player exist
+   across all four directions:
+   - Horizontal (-)
+   - Vertical (|)
+   - Positive Diagonal (/)
+   - Negative Diagonal (\)
+5. Return the exact List<Point> of the 4 winning coordinates so the UI can highlight the winning line.
+Write clean, modular code in Connect4Model.java without GUI imports.
+"""
+
+AIaren erantzunaren ebaluazioa (Euskara):
+- Matrizea eta 4 noranzkoetako garaipen-egiaztapena matematikoki perfektuak dira.
+- Akats hautemana: Zutabe betean fitxa bat sartzen saiatzean, metodoak -1 indizera sartu nahi
+  zuen, `ArrayIndexOutOfBoundsException` salbuespena sortuz.
+- Beharrezko hobekuntza: `dropDisc` metodoa blindatzea: baliozkoa ez bada -1 bueltatu eta
+  salbuespen guztiak kontrolpean eduki.
+
+--- [PROMPT 2.2: BOT HEURISTIKOA ETA TAULAREN PUNTUAZIO FUNTZIOA] ---
+Data: 2026-10-27 | Arduraduna: 2. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Implement an intelligent heuristic bot for Connect 4 in Connect4AI.java:
+1. Candidate Evaluation: The AI must simulate dropping a disc into each non-full column (0 to 6)
+   and evaluate the resulting board state using a heuristic scoring function (evaluateBoard).
+2. Heuristic Rules & Weights:
+   - Rule 1 (Immediate Win): If a column produces an immediate 4-in-a-row for the AI, score +10000 points.
+   - Rule 2 (Immediate Block): If the opponent could win on their next turn in a column, the AI MUST prioritize
+     blocking that column (+5000 points).
+   - Rule 3 (Sliding Window of 4 cells):
+     * 3 AI discs + 1 empty = +120 points.
+     * 2 AI discs + 2 empty = +20 points.
+     * 3 Opponent discs + 1 empty (latent threat) = -100 points.
+   - Rule 4 (Center Column Preference): Discs in the central column (index 3) receive a +8 point bonus per disc,
+     favoring central board control.
+   - Rule 5 (Blunder Avoidance): Strongly penalize (-4000 points) any move that allows the opponent to win
+     in the cell directly above the placed disc on the very next turn.
+3. Method getBestMove(Connect4Model model): Returns the optimal column index.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- Botak maila estrategiko bikaina du: aurkariaren garaipenak blokeatzen ditu, tranpak saihesten
+  ditu eta erdialdeko kontrola bilatzen du.
+
+--- [PROMPT 2.3: SWING BISTA ZIRKULARRA ETA KONTROLATZAILE SENDOA] ---
+Data: 2026-10-27 | Arduraduna: 2. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Build the GUI and Controller for Connect 4:
+1. Connect4View (JPanel & JFrame):
+   - Render the classic blue Connect 4 grid with 42 circular perforations (6 rows x 7 cols).
+   - Empty holes: Slate Gray / Dark background.
+   - Player 1 discs: Radiant Red (#EF4444). AI discs: Amber Yellow (#F59E0B).
+   - Top control bar: 7 dedicated drop buttons labeled '↓ Col 1' to '↓ Col 7'.
+   - Winning highlight: The 4 winning discs must display a glowing golden border.
+2. Connect4Controller:
+   - Coordinates turn progression.
+   - Disables all column buttons while the AI is calculating its move.
+   - Dynamically disables the drop button of any column that becomes completely full.
+   - Encapsulates every model invocation in robust try-catch blocks.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- 2. Ariketa amaituta. Interfaze grafiko ederra eta errore-iturri guztiak babestuta.
+
+
+================================================================================
+3. BLOKEA: 3. ARIKETA (AURRERATUA) - SNAKE 2D HARIEKIN ETA AUTO-PLAY (A*)
+================================================================================
+
+--- [PROMPT 3.1: HARI ANITZEKO ARKITEKTURA (GAME LOOP) ETA SWING RENDERIZAZIOA] ---
+Data: 2026-10-27 | Arduraduna: 3. Ikaslea (Denbora Erreala eta Hariak)
+
+AIari bidalitako Prompt-a (English):
+"""
+Act as an expert in 2D real-time game architecture and multithreading in Java.
+Design the core architecture for a 2D Snake game in package com.erronka.advanced:
+1. Spatial Representation:
+   - 25x25 grid with 20 pixels per tile (500x500 px canvas).
+   - Snake body: LinkedList<Point> where point 0 is the head.
+   - Food: Random Point placed strictly on unoccupied coordinates.
+2. Decoupled Multithreaded Game Loop (GameLoop.java implements Runnable):
+   - Runs in a dedicated background Thread (Thread gameThread = new Thread(loop)).
+   - Controlled frame timing: Base speed of 110ms per tick, accelerating slightly as score increases.
+   - Thread safety: Use volatile / AtomicBoolean flags for 'running' and 'paused' states.
+   - Provide safe methods: start(), pauseGame(), resumeGame(), stopGame().
+3. Graphics Rendering in SnakePanel extends JPanel:
+   - Override paintComponent(Graphics g) with Graphics2D and RenderingHints.KEY_ANTIALIASING on.
+   - Native Swing double-buffering to eliminate any screen flickering.
+   - Thread synchronization: At each game tick, trigger rendering safely on the EDT using
+     SwingUtilities.invokeLater(() -> panel.repaint()).
+"""
+
+AIaren erantzunaren ebaluazioa (Euskara):
+- Game Loop-ak oso ondo funtzionatzen du eta ez du CPUa gainkargatzen.
+- Akats hautemana: Teklatuarekin azkar sakatzean (adib. Behera eta berehala Ezkerra), sugeak
+  180 graduko bira egiten zuen tick bakar batean bere lepoaren aurka talka eginez.
+- Beharrezko hobekuntza: Banderak edo norabide-ilarak ezarri, tick bakoitzeko gehienez norabide
+  aldaketa baliodun bakarra onartzeko.
+
+--- [PROMPT 3.2: DENBORA ERREALEKO BIDE-BILAKETA ETA AUTO-PLAY MODUA] ---
+Data: 2026-10-27 | Arduraduna: 3. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Design an intelligent real-time autonomous pathfinding system in SnakeAI.java for an 'Auto-Play' showcase:
+1. Interactive Toggle: The user must be able to switch instantly between Manual Mode (Arrow Keys / WASD)
+   and Auto-Play Mode by pressing 'SPACEBAR' or clicking an on-screen toggle button.
+2. AI Pathfinding Algorithm:
+   - Breadth-First Search (BFS) / A* to find the shortest path from the snake's head to the food.
+   - Obstacles: Grid boundaries and all current body segments of the snake are treated as impenetrable walls.
+3. Survival / Trap Avoidance Fallback (Flood Fill):
+   - If no direct path to the food exists, or if following the path traps the snake in a dead end,
+     the AI must fall back to a survival heuristic: choose the adjacent safe neighbor cell that has the largest
+     open reachable area (calculated via Flood Fill), or safely pursue its own tail until an apple path opens up.
+4. Execution constraints: Algorithm must execute in under 3 milliseconds to prevent any drop in frame rate.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- Auto-Play moduak ikusgarri funtzionatzen du. Zuzeneko aurkezpenean botoia sakatu eta sugea
+  bere kabuz mugitzen da sagarra bilatuz eta hormak zein buztana saihestuz.
+
+--- [PROMPT 3.3: HARIAREN KUDEAKETA SEGURUA ETA LEIHOAREN ITXIERA] ---
+Data: 2026-10-27 | Arduraduna: 3. Ikaslea
+
+AIari bidalitako Prompt-a (English):
+"""
+Harden the multithreaded concurrency and event handling for the Snake game:
+1. Prevent ConcurrentModificationException: Synchronize access to the snake's LinkedList<Point>
+   between the game loop thread (which mutates points) and the Swing EDT (which iterates to draw them).
+2. Lifecycle cleanup: Attach a WindowListener so that closing the Snake JFrame immediately signals
+   the background Thread to terminate cleanly without leaving orphaned threads running in the background.
+3. KeyListener focus robustness: Ensure the game panel retains keyboard focus when clicked,
+   and wrap user input handlers in defensive try-catch statements.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- 3. Ariketa prest. Hariek egonkor funtzionatzen dute eta baliabide guztiak behar bezala askatzen dira.
+
+
+================================================================================
+4. BLOKEA: SENDOTASUN TRANSBERTSALA ETA "CRASH-FREE" KONTROLA
+================================================================================
+
+--- [PROMPT 4.1: SEGURTASUN AUDITORIA ETA SALBUESPENEN TRATAERA] ---
+Data: 2026-10-27 | Arduraduna: Talde Osoa
+
+AIari bidalitako Prompt-a (English):
+"""
+Act as a Java QA / Security Engineer. Perform a comprehensive code audit across all 3 mini-games
+and the main launcher to guarantee a 100% crash-free user experience:
+1. Audit for typical runtime exceptions:
+   - NumberFormatException, NullPointerException, ArrayIndexOutOfBoundsException, ConcurrentModificationException.
+2. Defensive Programming:
+   - Ensure all public controller methods and user input entry points are encapsulated in defensive
+     try-catch blocks.
+   - In the event of an unexpected edge case, show a user-friendly JOptionPane alert dialog instead of
+     letting the application terminate with a stack trace.
+3. Command Line Verification:
+   - Provide the exact terminal commands to compile (javac) and run (java) the entire project cleanly
+     from the root directory without IDE dependencies.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- Klase guztiak berrikusi dira. Ezohiko klikak, leihoen tamaina aldaketak eta jokoen arteko
+  aldaketak probatu dira: programa ez da inoiz erortzen (`Crash-free`).
+
+
+================================================================================
+5. BLOKEA: AURKEZPENAREN PRESTAKETA ETA GIDOIA (10 MINUTU)
+================================================================================
+
+--- [PROMPT 5.1: AURKEZPENAREN EGITURA ETA DEMOREN KRONOGRAMA] ---
+Data: 2026-10-27 | Arduraduna: Talde Osoa
+
+AIari bidalitako Prompt-a (English):
+"""
+Generate a structured outline for the final 10-minute presentation (Presentacion.pdf, 5 slides)
+and an exact script for the live classroom demo with 3 team members:
+1. Slide Breakdown:
+   - Slide 1: Title, Team Members, and Suite Overview.
+   - Slide 2: Global Architecture (MVC Pattern, Modular packages, and Central Launcher Hub).
+   - Slide 3: Exercise 1 & 2 (Minimax Tic-Tac-Toe with Hints + Connect 4 Heuristic Bot).
+   - Slide 4: Exercise 3 (Snake 2D Multithreading, Game Loop decoupled from EDT, and A* Pathfinding).
+   - Slide 5: Prompt Engineering Methodology, Refinement Iterations, and Crash-Free Testing.
+2. Timed Live Demo Script:
+   - Min 00:00 - 01:00 (Student 1): Introduction, architecture, and Launcher walkthrough.
+   - Min 01:00 - 03:30 (Student 1): Live demo of Tic-Tac-Toe (Human vs Minimax, difficulty selector & hints).
+   - Min 03:30 - 06:00 (Student 2): Live demo of Connect 4 (Heuristic bot evaluation & win detection).
+   - Min 06:00 - 08:30 (Student 3): Live demo of Snake 2D (Real-time thread, Auto-Play toggle demonstration).
+   - Min 08:30 - 10:00 (All 3): Prompt Engineering takeaways, exception handling defense, and Q&A.
+"""
+
+Emaitza eta integrazioa (Euskara):
+- Gidoia prestatu da talde osoaren artean banatuta. `Presentacion.pdf` dokumenturako oinarria finkatuta.
+
+================================================================================
+PROMPT ERREGISTROAREN AMAIERA — ENTREGA PREST
+================================================================================
